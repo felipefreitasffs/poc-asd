@@ -15,9 +15,8 @@ module.exports = function (socket) {
       password
     };
 
-    socket.request.session = {};
-
-    socket.request.session['user'] = user;
+    socket.handshake.session.userdata = user;
+    socket.handshake.session.save();
 
     console.log('user', user)
 

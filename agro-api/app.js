@@ -11,6 +11,7 @@ var redisStore = require('connect-redis')(session);
 var path = require('path');
 var http = require('http');
 var io = require('socket.io');
+var sharedsession = require("express-socket.io-session");
 
 var authRoute = require('./routes/auth');
 
@@ -51,33 +52,38 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(allowCrossDomain);
 
-app.use(session({
+var sessionConf = session({
   store: redisStore,
   name: config.sessionCookieKey,
   secret: config.sessionSecret,
   resave: true,
   saveUninitialized: true
-}));
+});
 
+// Attach session
+app.use(sessionConf);
+
+// Share session with io sockets
+ioServer.use(sharedsession(sessionConf));
 
 // Compartilhando a sessão válida do Express no Socket.IO
-ioServer.use(function (socket, next) {
-  var parseCookie = cookieParser(config.sessionSecret);
-  var handshake = socket.request;
+// ioServer.use(function (socket, next) {
+//   var parseCookie = cookieParser(config.sessionSecret);
+//   var handshake = socket.request;
 
-  parseCookie(handshake, null, function (err, data) {
-    sessionService.get(handshake, function (err, session) {
-      if (err)
-        next(new Error(err.message));
-      if (!session)
-        next(new Error("Not authorized"));
+//   parseCookie(handshake, null, function (err, data) {
+//     sessionService.get(handshake, function (err, session) {
+//       if (err)
+//         next(new Error(err.message));
+//       if (!session)
+//         next(new Error("Not authorized"));
       
-      console.log('session', session)
-      handshake.session = session;
-      next();
-    });
-  });
-});
+//       console.log('session', session)
+//       handshake.session = session;
+//       next();
+//     });
+//   });
+// });
 
 // ioServer.use(function(socket, next) {
 //   var data = socket.request;
