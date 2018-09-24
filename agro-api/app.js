@@ -37,14 +37,6 @@ var allowCrossDomain = function (req, res, next) {
   next();
 };
 
-app.use(session({
-  store: redisStore,
-  key: config.sessionCookieKey,
-  secret: config.sessionSecret,
-  resave: false,
-  saveUninitialized: false
-}));
-
 app.use(logger('dev'));
 
 // log all requests to access.log
@@ -52,10 +44,21 @@ app.use(logger('combined', {
   stream: fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
 }))
 
-app.use(cookieParser(config.sessionSecret));
+var cookie = cookieParser(config.sessionSecret)
+
+app.use(cookie);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(allowCrossDomain);
+
+app.use(session({
+  store: redisStore,
+  name: config.sessionCookieKey,
+  secret: config.sessionSecret,
+  resave: true,
+  saveUninitialized: true
+}));
+
 
 // Compartilhando a sessão válida do Express no Socket.IO
 ioServer.use(function (socket, next) {
@@ -75,6 +78,21 @@ ioServer.use(function (socket, next) {
     });
   });
 });
+
+// ioServer.use(function(socket, next) {
+//   var data = socket.request;
+//   cookie(data, {}, function(err) {
+//     var sessionID = data.signedCookies[config.sessionCookieKey];
+//     redisStore.get(sessionID, function(err, session) {
+//       if (err || !session) {
+//         return next(new Error('Acesso negado!'));
+//       } else {
+//         socket.handshake.session = session;
+//         return next();
+//       }
+//     });
+//   });
+// });
 
 ioServer.sockets.on('connection', function (socket) {
   authRoute(socket);

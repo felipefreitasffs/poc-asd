@@ -20,6 +20,7 @@ export default {
   },
   mounted () {
     this.$socket.emit('user:auth', 'felipe@felipe.com', 'teste')
+    console.log('mounted')
   }
 }
 </script>

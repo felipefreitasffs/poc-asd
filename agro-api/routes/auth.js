@@ -15,6 +15,8 @@ module.exports = function (socket) {
       password
     };
 
+    socket.request.session = {};
+
     socket.request.session['user'] = user;
 
     console.log('user', user)
@@ -64,11 +66,13 @@ function checkAuthentication(auth, socket) {
           }
         }, { noAck: true });
 
+        var authUser = {
+          username: auth.username,
+          password: auth.password
+        };
+
         ch.sendToQueue('auth_queue',
-          new Buffer(JSON.stringify({
-            username: 'auth.username',
-            password: 'auth.password'
-          })),
+          new Buffer(JSON.stringify(authUser)),
           {
             correlationId: corr,
             replyTo: q.queue
