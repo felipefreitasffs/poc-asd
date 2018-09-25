@@ -9,6 +9,8 @@
   "author": "Felipe F.",
   "license": "ISC",
   "dependencies": {
-    "amqplib": "^0.5.2"
+    "amqplib": "^0.5.2",
+    "node-couchdb": "^1.3.0",
+    "node-couchdb-plugin-redis": "0.0.2"
   }
 }

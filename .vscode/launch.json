@@ -7,7 +7,13 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Executar Programa",
+            "name": "Authentication",
+            "program": "${workspaceFolder}/authentication/index.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Agro-API",
             "program": "${workspaceFolder}/agro-api\\bin/www"
         }
     ]

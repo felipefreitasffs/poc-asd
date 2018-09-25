@@ -15,12 +15,14 @@ export default {
       console.log('socket connected')
     },
     user_accept: function (val) {
-      console.log('this method was fired by the socket server. eg: io.emit("customEmit", data)', val)
+      console.log('usuário logado!', val)
+    },
+    user_denied: function () {
+      console.log('usuário negado!')
     }
   },
   mounted () {
-    this.$socket.emit('user:auth', 'felipe@felipe.com', 'teste')
-    console.log('mounted')
+    this.$socket.emit('user_auth', 'felipe@felipe.com', '112345')
   }
 }
 </script>

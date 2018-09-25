@@ -7,7 +7,6 @@ var fs = require('fs');
 var logger = require('morgan');
 var redis = require("redis");
 var session = require('express-session');
-var redisStore = require('connect-redis')(session);
 var path = require('path');
 var http = require('http');
 var io = require('socket.io');
