@@ -14,6 +14,15 @@ module.exports = function(socket) {
 
     checkAuthentication(user, socket);
   });
+
+  socket.on("user_logout", function() {
+    if (socket.handshake.session.userdata) {
+      delete socket.handshake.session.userdata;
+      socket.handshake.session.save();
+
+      socket.emit("user_off");
+    }
+  });
 };
 
 function checkAuthentication(auth, socket) {
@@ -64,5 +73,3 @@ function checkAuthentication(auth, socket) {
     }
   );
 }
-
-// module.exports = router;

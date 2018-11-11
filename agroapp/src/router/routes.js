@@ -3,9 +3,15 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MyLayout.vue'),
+    secure: true,
     children: [
       { path: '', component: () => import('pages/Index.vue') }
     ]
+  },
+  {
+    path: '/Login',
+    name: 'Login',
+    component: () => import('pages/Login.vue')
   }
 ]
 
