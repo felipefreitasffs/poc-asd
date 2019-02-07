@@ -1,4 +1,3 @@
-const amqp = require("amqplib/callback_api");
 const Cache = require("node-couchdb-plugin-redis");
 const NodeCouchDb = require("node-couchdb");
 
@@ -12,74 +11,20 @@ const couch = new NodeCouchDb({
   cache: cacheInstance
 });
 
-const dbName = "agro_users";
+const userDbName = "agro_users";
+const profileDbName = "agor_profiles";
 
-amqp.connect(
-  "amqp://localhost",
-  function(err, conn) {
-    conn.createChannel(function(err, ch) {
-      const q = "new_user_queue";
+var listUsers = require('./listUsers');
+listUsers(couch, userDbName);
 
-      ch.assertQueue(q, { durable: false });
-      ch.prefetch(1);
-      console.log(" [x] Awaiting RPC requests");
+var addUser = require('./addUser');
+addUser(couch, userDbName);
 
-      ch.consume(q, function reply(msg) {
-        const n = JSON.parse(msg.content.toString());
-        let response = {};
+var deleteUser = require('./deleteUser');
+deleteUser(couch, userDbName);
 
-        console.log(" [.] server receive", n);
+var editUser = require('./editUser');
+editUser(couch, userDbName);
 
-        const mangoQuery = {
-          selector: {
-            username: n.username,
-            password: n.password
-          }
-        };
-        const parameters = {};
-
-        couch
-          .mango(dbName, mangoQuery, parameters)
-          .then(
-            ({ data, headers, status }) => {
-              console.log(data);
-
-              if (data.docs && data.docs.length) {
-                response = {
-                  result: 1,
-                  data: {
-                    name: data.docs[0].name,
-                    username: data.docs[0].username,
-                    profile: data.docs[0].profile
-                  }
-                };
-              } else {
-                response = {
-                  result: 0
-                };
-              }
-
-              console.log("response: ", response);
-            },
-            err => {
-              console.error(err);
-              response = {
-                result: -1
-              };
-            }
-          )
-          .then(() => {
-            ch.sendToQueue(
-              msg.properties.replyTo,
-              new Buffer(JSON.stringify(response)),
-              {
-                correlationId: msg.properties.correlationId
-              }
-            );
-
-            ch.ack(msg);
-          });
-      });
-    });
-  }
-);
+var listProfiles = require('./listProfiles');
+listProfiles(couch, profileDbName);

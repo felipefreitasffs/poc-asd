@@ -13,6 +13,7 @@ var io = require('socket.io');
 var sharedsession = require("express-socket.io-session");
 
 var authRoute = require('./routes/auth');
+var usersRoute = require('./routes/users');
 
 var app = express();
 
@@ -65,42 +66,10 @@ app.use(sessionConf);
 // Share session with io sockets
 ioServer.use(sharedsession(sessionConf));
 
-// Compartilhando a sessão válida do Express no Socket.IO
-// ioServer.use(function (socket, next) {
-//   var parseCookie = cookieParser(config.sessionSecret);
-//   var handshake = socket.request;
-
-//   parseCookie(handshake, null, function (err, data) {
-//     sessionService.get(handshake, function (err, session) {
-//       if (err)
-//         next(new Error(err.message));
-//       if (!session)
-//         next(new Error("Not authorized"));
-      
-//       console.log('session', session)
-//       handshake.session = session;
-//       next();
-//     });
-//   });
-// });
-
-// ioServer.use(function(socket, next) {
-//   var data = socket.request;
-//   cookie(data, {}, function(err) {
-//     var sessionID = data.signedCookies[config.sessionCookieKey];
-//     redisStore.get(sessionID, function(err, session) {
-//       if (err || !session) {
-//         return next(new Error('Acesso negado!'));
-//       } else {
-//         socket.handshake.session = session;
-//         return next();
-//       }
-//     });
-//   });
-// });
-
 ioServer.sockets.on('connection', function (socket) {
+  console.log('conectado no socket')
   authRoute(socket);
+  usersRoute(socket);
 });
 
 module.exports = server;

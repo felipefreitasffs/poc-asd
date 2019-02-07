@@ -14,7 +14,7 @@
         <q-tabs align="center" :glossy=true class="on-left">
           <q-route-tab
             label="Usuários"
-            to="/mails"
+            to="/Users"
             exact
             slot="title"
           />

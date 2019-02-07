@@ -16,7 +16,10 @@ module.exports = function(socket) {
   });
 
   socket.on("user_logout", function() {
+    console.log('mensagem para deslogar o usuário')
+    console.log('sessão: ', socket.handshake.session)
     if (socket.handshake.session.userdata) {
+      console.log('usuário possui sessão: ', socket.handshake.session.userdata)
       delete socket.handshake.session.userdata;
       socket.handshake.session.save();
 
@@ -46,6 +49,7 @@ function checkAuthentication(auth, socket) {
                 if (message.result) {
                   socket.handshake.session.userdata = message.data;
                   socket.handshake.session.save();
+                  console.log(socket.handshake.session);
                   socket.emit("user_accept", message.data);
                 } else {
                   socket.emit("user_denied");

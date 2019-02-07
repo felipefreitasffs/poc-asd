@@ -11,7 +11,7 @@
             <q-input float-label="Usuário:" v-model="username" class="loginField"/>
           </q-field>
           <q-field>
-            <q-input float-label="Senha:" v-model="password" class="loginField"/>
+            <q-input type="password" float-label="Senha:" v-model="password" class="loginField"/>
           </q-field>
           <br><br>
           <q-btn color="primary" label="Entrar" @click="login"/>
