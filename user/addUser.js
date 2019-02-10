@@ -1,4 +1,6 @@
 const amqp = require("amqplib/callback_api");
+const token = require("./helpers/token");
+const CryptoJS = require("crypto-js");
 
 module.exports = function(couch, dbName) {
   amqp.connect(
@@ -16,6 +18,12 @@ module.exports = function(couch, dbName) {
           let response = {};
 
           console.log(" [.] server receive", n);
+
+          if (n.profile.value === "specialCustomer") {
+              n["token"] = token(36);
+          }
+
+          n.password = CryptoJS.SHA256(n.password, "agro app secret key").toString();
 
           couch
             .insert(dbName, n)

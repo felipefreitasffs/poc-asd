@@ -1,3 +1,2 @@
 
-agro-api/node_modules/
-authentication/node_modules/
+**/node_modules/

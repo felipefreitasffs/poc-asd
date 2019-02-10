@@ -20,6 +20,9 @@
                 <q-btn size="sm" round dense color="secondary" icon="delete" @click="deleteUser(col.value)"/>
                 <q-btn size="sm" round dense color="secondary" icon="edit" @click="modalEditUser(props.row)"/>
               </div>
+              <template v-else-if="col.name === 'Profile'">
+                {{ col.value.label }}
+              </template>
               <template v-else>
                 {{ col.value }}
               </template>
@@ -207,11 +210,16 @@ export default {
   methods: {
     addOrEditUser () {
       if (!this.isEdition) {
-        this.$socket.emit('add_users', this.form)
+        this.$socket.emit('add_users', {
+          username: this.form.username,
+          profile: this.listProfiles.filter((item) => item.value === this.form.profile)[0],
+          name: this.form.name,
+          password: this.form.password
+        })
       } else {
         this.$socket.emit('edit_users', {
           username: this.form.username,
-          profile: this.form.profile,
+          profile: this.listProfiles.filter((item) => item.value === this.form.profile)[0],
           name: this.form.name,
           id: this.editUserId
         })
@@ -226,7 +234,7 @@ export default {
     modalEditUser (user) {
       console.log(user)
       this.form.username = user.username
-      this.form.profile = user.profile
+      this.form.profile = user.profile.value
       this.form.name = user.name
       this.editUserId = user.id
       this.userModal = true
