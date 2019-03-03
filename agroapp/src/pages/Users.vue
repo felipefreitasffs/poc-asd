@@ -241,6 +241,7 @@ export default {
       this.isEdition = true
     },
     loadUsers (username) {
+      console.log('loadUsers')
       this.$socket.emit('list_users', { username: undefined })
     },
     loadProfiles () {

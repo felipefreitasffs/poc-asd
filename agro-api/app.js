@@ -1,5 +1,3 @@
-// https://github.com/pootzko/sesior
-
 var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
@@ -12,6 +10,7 @@ var path = require('path');
 var http = require('http');
 var io = require('socket.io');
 var sharedsession = require("express-socket.io-session");
+var compression = require('compression');
 
 var authRoute = require('./routes/auth');
 var usersRoute = require('./routes/users');
@@ -55,6 +54,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(allowCrossDomain);
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(compression());
 
 var sessionConf = session({
   store: redisStore,
@@ -73,9 +73,12 @@ ioServer.use(sharedsession(sessionConf));
 ioServer.sockets.on('connection', function (socket) {
   console.log('conectado no socket')
   authRoute(socket);
-  usersRoute(socket);
+  if (socket.handshake.sessionStore) {
+    usersRoute(socket);
+  }
 });
 
+// Special client request new budget
 app.post('/budget/:token', function (req, res) {
   budgetRoute(req, res);
 });

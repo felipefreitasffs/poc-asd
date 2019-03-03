@@ -29,7 +29,8 @@ module.exports = function(couch, dbName) {
                   username: n.username,
                   profile: n.profile,
                   name: n.name,
-                  password: data.password
+                  password: data.password,
+                  token: data.token
                 })
                 .then(
                   ({ data, headers, status }) => {

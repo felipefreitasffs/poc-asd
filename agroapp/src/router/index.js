@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
+import { Notify } from 'quasar'
 import routes from './routes'
 
 Vue.use(VueRouter)
@@ -22,26 +22,33 @@ export default function (/* { store, ssrContext } */) {
   })
 
   Router.beforeEach((to, from, next) => {
-    // Look at all routes
-    Router.options.routes.forEach((route) => {
-      console.log('route', route)
-      console.log('to', to)
-      // If this is the current route and it's secure
-      if (to.path === route.path && route.secure) {
-        console.log('rota segura')
-        // Verify that the user isn't logged in
-        const user = window.localStorage.getItem('user')
-        console.log('localstorage', user)
-        if (!user || (route.rule && user.profile !== route.rule)) {
-          // Kill the session
-          if (Router.app.$session) {
-            Router.app.$session.destroy()
-          }
-          // Route back to the Login
-          return next('Login')
+    // If this is the current route and it's secure
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+      console.log('rota segura')
+      // Verify that the user isn't logged in
+      const user = window.localStorage.getItem('user')
+      console.log('localstorage', user)
+      if (!user || (to.rule && user.profile !== to.rule)) {
+        console.log('aqui')
+        // Kill the session
+        if (Router.app.$session) {
+          Router.app.$session.destroy()
         }
+
+        Notify.create({
+          message: 'Não logado! Você será redirecionado para a página de login'
+        })
+
+        setTimeout(() => {
+          // Route back to the Login
+          return next({
+            path: '/login',
+            params: { return: to.fullPath }
+          })
+        }, 5000)
       }
-    })
+    }
+    console.log('aqui 3')
     // Proceed as normal
     next()
   })

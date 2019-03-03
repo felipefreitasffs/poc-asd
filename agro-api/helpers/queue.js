@@ -1,7 +1,7 @@
 var amqp = require("amqplib/callback_api");
 var guid = require("./guid");
 
-function brokerMessage(filter, socket, queueName, socketToReturn) {
+function queue(message, socket, queueName, socketToReturn) {
   amqp.connect(
     "amqp://localhost",
     function(err, conn) {
@@ -15,10 +15,10 @@ function brokerMessage(filter, socket, queueName, socketToReturn) {
             q.queue,
             function(msg) {
               if (msg.properties.correlationId == corr) {
-                const message = JSON.parse(msg.content.toString());
+                const jsonMessage = JSON.parse(msg.content.toString());
                 console.log(" Got ", msg.content.toString());
 
-                socket.emit(socketToReturn, message.data);
+                socket.emit(socketToReturn, jsonMessage.data);
 
                 conn.close();
               }
@@ -26,7 +26,7 @@ function brokerMessage(filter, socket, queueName, socketToReturn) {
             { noAck: true }
           );
 
-          ch.sendToQueue(queueName, new Buffer(JSON.stringify(filter)), {
+          ch.sendToQueue(queueName, new Buffer(JSON.stringify(message)), {
             correlationId: corr,
             replyTo: q.queue
           });
@@ -36,4 +36,4 @@ function brokerMessage(filter, socket, queueName, socketToReturn) {
   );
 }
 
-module.exports = brokerMessage;
+module.exports = queue;

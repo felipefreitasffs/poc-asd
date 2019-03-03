@@ -5,6 +5,10 @@ module.exports = function(req, res) {
   console.log('req: ', req.params);
   console.log('req: ', req.body);
 
+  if (!req.body) {
+    console.error('conteúdo inválido!!')
+  }
+
   if (!req.params.token) {
     res.sendStatus(400, 'missing authorization token');
     return;
@@ -38,7 +42,7 @@ function checkToken(token, callback, response, request) {
                 callback(response, request);
 
                 // setTimeout(function() {
-                conn.close();
+                // conn.close();
                 // }, 500);
               }
             },

@@ -15,7 +15,13 @@ module.exports = function(couch, productsDbName, budgetsDbName) {
           const n = JSON.parse(msg.content.toString());
           let response = {};
 
+          console.log(msg)
+
           console.log(" [.] server receive", n);
+
+          if (!n || n === {} || n === null || n === undefined) {
+            return
+          }
 
           const mangoQuery = n
             ? {
